@@ -1,10 +1,10 @@
 "use client"
 
 import { useCartStore } from "@/store/cartStore"
+import { useCurrencyStore } from "@/store/currencyStore"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { formatCurrency } from "@/lib/utils"
 import { Trash2, Plus, Minus, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -13,6 +13,7 @@ import { placeOrder } from "@/lib/cart-actions"
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCartStore()
+    const { formatPrice } = useCurrencyStore()
     const [loading, setLoading] = useState(false)
     const router = useRouter()
 
@@ -70,7 +71,7 @@ export default function CartPage() {
 
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-medium text-white truncate">{item.name}</h3>
-                                    <p className="text-blue-400 font-bold">{formatCurrency(item.price)}</p>
+                                    <p className="text-blue-400 font-bold">{formatPrice(item.price)}</p>
                                 </div>
 
                                 <div className="flex items-center gap-2">
@@ -114,12 +115,12 @@ export default function CartPage() {
                         <CardContent className="space-y-4">
                             <div className="flex justify-between text-slate-300">
                                 <span>Ara Toplam</span>
-                                <span>{formatCurrency(totalPrice())}</span>
+                                <span>{formatPrice(totalPrice())}</span>
                             </div>
                             <Separator className="bg-slate-800" />
                             <div className="flex justify-between font-bold text-white text-lg">
                                 <span>Toplam</span>
-                                <span>{formatCurrency(totalPrice())}</span>
+                                <span>{formatPrice(totalPrice())}</span>
                             </div>
                         </CardContent>
                         <CardFooter>

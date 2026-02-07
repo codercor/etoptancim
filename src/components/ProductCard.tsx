@@ -10,6 +10,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useCurrencyStore } from "@/store/currencyStore"
 
 interface Product {
     id: string
@@ -23,6 +24,7 @@ interface Product {
 
 export function ProductCard({ product }: { product: Product }) {
     const { addItem } = useCartStore()
+    const { formatPrice } = useCurrencyStore()
     const imageUrl = product.image_urls?.[0] || "/placeholder-product.jpg"
 
     const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -97,7 +99,7 @@ export function ProductCard({ product }: { product: Product }) {
                     </h3>
                     {product.price_usd && (
                         <p className="text-lg font-bold text-green-400">
-                            ${product.price_usd.toFixed(2)}
+                            {formatPrice(product.price_usd)}
                         </p>
                     )}
                 </div>

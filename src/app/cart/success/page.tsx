@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Package, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { formatCurrency } from "@/lib/utils"
+import { useCurrencyStore } from "@/store/currencyStore"
 
 export default function OrderSuccessPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { formatPrice, selectedCurrency, exchangeRate } = useCurrencyStore()
     const [orderData, setOrderData] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
@@ -108,10 +109,10 @@ export default function OrderSuccessPage() {
                             </div>
                             <div className="text-right">
                                 <p className="text-white font-bold">
-                                    {formatCurrency(item.price * item.quantity)}
+                                    {formatPrice(item.price * item.quantity)}
                                 </p>
                                 <p className="text-xs text-slate-500">
-                                    {formatCurrency(item.price)} / adet
+                                    {formatPrice(item.price)} / adet
                                 </p>
                             </div>
                         </div>
@@ -120,9 +121,16 @@ export default function OrderSuccessPage() {
                     {/* Total */}
                     <div className="flex justify-between items-center pt-4 border-t border-slate-700">
                         <span className="text-lg font-semibold text-white">Toplam Tutar</span>
-                        <span className="text-2xl font-bold text-blue-400">
-                            {formatCurrency(orderData.total)}
-                        </span>
+                        <div className="text-right">
+                            <span className="text-2xl font-bold text-blue-400 block">
+                                {formatPrice(orderData.total)}
+                            </span>
+                            {selectedCurrency === 'TRY' && (
+                                <span className="text-sm text-slate-400">
+                                    ≈ ${(orderData.total / exchangeRate).toFixed(2)} USD
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </CardContent>
             </Card>

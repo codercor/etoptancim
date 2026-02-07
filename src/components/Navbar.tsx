@@ -10,6 +10,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { useCartStore } from "@/store/cartStore"
 import { User, LogOut, LayoutDashboard } from "lucide-react"
 import { NotificationBell } from "@/components/notification-bell"
+import { CurrencySelector } from "@/components/CurrencySelector"
+import { ExchangeRateDisplay } from "@/components/ExchangeRateDisplay"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -103,6 +105,9 @@ export function Navbar({ categories = [] }: NavbarProps) {
                                 className="w-64 pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
                             />
                         </form>
+
+                        <ExchangeRateDisplay />
+                        <CurrencySelector />
 
                         {user && !isAdmin && (
                             <Link href="/cart">
@@ -208,6 +213,12 @@ export function Navbar({ categories = [] }: NavbarProps) {
                                             className="w-full pl-10 bg-slate-900 border-slate-700 text-white"
                                         />
                                     </form>
+
+                                    <div className="flex items-center justify-between gap-2 pb-4 border-b border-slate-800">
+                                        <ExchangeRateDisplay />
+                                        <CurrencySelector />
+                                    </div>
+
                                     <Link
                                         href="/"
                                         onClick={() => setIsOpen(false)}
