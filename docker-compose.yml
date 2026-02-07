@@ -115,6 +115,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      kong:
+        condition: service_started
       auth:
         condition: service_started
       rest:
