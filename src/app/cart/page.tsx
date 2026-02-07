@@ -24,8 +24,13 @@ export default function CartPage() {
             // Store order data in sessionStorage for success page
             sessionStorage.setItem('lastOrder', JSON.stringify(orderResult))
 
-            clearCart() // Clear local state
-            router.push("/cart/success")
+            // Navigate immediately with replace (doesn't add to history)
+            // This prevents the empty cart screen from showing
+            router.replace("/cart/success")
+
+            // Clear local cart state after navigation starts
+            // The database cart is already cleared by placeOrder()
+            setTimeout(() => clearCart(), 100)
         } catch (error) {
             console.error("Checkout failed:", error)
             alert("Sipariş oluşturulurken bir hata oluştu.")

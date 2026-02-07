@@ -20,12 +20,9 @@ export default function OrderSuccessPage() {
         if (storedData) {
             setOrderData(JSON.parse(storedData))
             sessionStorage.removeItem('lastOrder') // Clean up
-        } else {
-            // If no data, redirect to orders page
-            setTimeout(() => router.push('/orders'), 2000)
         }
         setLoading(false)
-    }, [router])
+    }, [])
 
     if (loading) {
         return (
@@ -38,7 +35,7 @@ export default function OrderSuccessPage() {
     if (!orderData) {
         return (
             <div className="container mx-auto py-16 px-4 text-center">
-                <p className="text-slate-400">Sipariş bilgisi bulunamadı, yönlendiriliyorsunuz...</p>
+                <p className="text-slate-400">Sipariş bilgisi bulunamadı.</p>
             </div>
         )
     }
@@ -138,7 +135,7 @@ export default function OrderSuccessPage() {
                     </Button>
                 </Link>
                 <Link href="/urunler" className="flex-1 sm:flex-initial">
-                    <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800">
+                    <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 text-slate-900 hover:text-white">
                         Alışverişe Devam Et
                     </Button>
                 </Link>

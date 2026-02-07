@@ -9,8 +9,7 @@ import { useCartStore } from "@/store/cartStore"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-
-// Actually, I'll use window.alert or just nothing for now, relies on UI update.
+import { toast } from "sonner"
 
 interface Product {
     id: string
