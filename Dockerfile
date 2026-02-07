@@ -35,7 +35,7 @@ COPY package.json package-lock.json ./
 COPY . .
 
 # Install ALL dependencies (including devDependencies) for build
-RUN npm install
+RUN npm ci --include=dev
 
 # Build Next.js application
 RUN npm run build
