@@ -161,7 +161,7 @@ export function CurrencyManagement() {
                         <span className="text-green-500 font-bold">✓</span>
                         <div>
                             <p className="text-white font-medium">Otomatik Güncellemeler</p>
-                            <p className="text-slate-400">Her gün saat 10:00'da (UTC+3) ExchangeRate-API'den güncellenir</p>
+                            <p className="text-slate-400">Her gün saat 10:00'da (UTC+3) Currency API'den güncellenir</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -182,7 +182,7 @@ export function CurrencyManagement() {
                         <span className="text-green-500 font-bold">✓</span>
                         <div>
                             <p className="text-white font-medium">Veri Kaynağı</p>
-                            <p className="text-slate-400">ExchangeRate-API (ücretsiz tier) kullanılmaktadır</p>
+                            <p className="text-slate-400">Currency API (ücretsiz servis) kullanılmaktadır</p>
                         </div>
                     </div>
                 </CardContent>

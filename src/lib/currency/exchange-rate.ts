@@ -4,10 +4,10 @@ import { createClient } from '@/lib/supabase/server'
 import type { ExchangeRate } from '@/types/currency'
 import { isValidRate } from './converter'
 
-const EXCHANGE_RATE_API_URL = 'https://open.er-api.com/v6/latest/USD'
+const EXCHANGE_RATE_API_URL = 'https://latest.currency-api.pages.dev/v1/currencies/usd.json'
 
 /**
- * Fetch latest USD/TRY exchange rate from ExchangeRate-API
+ * Fetch latest USD/TRY exchange rate from Currency API
  */
 export async function fetchLatestRate(): Promise<number> {
     try {
@@ -21,11 +21,8 @@ export async function fetchLatestRate(): Promise<number> {
 
         const data = await response.json()
 
-        if (data.result !== 'success') {
-            throw new Error('API returned unsuccessful result')
-        }
-
-        const rate = data.rates?.TRY
+        // New API returns: { "date": "2026-02-07", "usd": { "try": 43.61244666, ... } }
+        const rate = data.usd?.try
 
         if (!rate || typeof rate !== 'number') {
             throw new Error('Invalid rate data from API')
