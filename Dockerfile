@@ -49,6 +49,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Install dependencies needed for runtime (psql for entrypoint check)
+RUN apk add --no-cache postgresql-client
+
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
