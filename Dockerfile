@@ -31,10 +31,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json ./
 COPY . .
 
-# Install all dependencies (including devDependencies for build)
-RUN npm ci
+# Install ALL dependencies (including devDependencies) for build
+RUN npm install
 
 # Build Next.js application
 RUN npm run build
