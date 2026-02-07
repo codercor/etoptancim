@@ -53,7 +53,7 @@ Modern B2B e-commerce platform built with Next.js 16, Supabase, and TailwindCSS.
 
 ### Prerequisites
 - Docker Engine 20.10+
-- Docker Compose 2.0+
+- Docker Compose V2 (included with Docker Desktop/latest Docker Engine)
 
 ### Setup Instructions
 
@@ -84,30 +84,30 @@ Modern B2B e-commerce platform built with Next.js 16, Supabase, and TailwindCSS.
 
 4. **Start all services**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 5. **Check service status**
    ```bash
-   docker-compose ps
+   docker compose ps
    ```
 
 6. **View logs**
    ```bash
    # All services
-   docker-compose logs -f
+   docker compose logs -f
    
    # Specific service
-   docker-compose logs -f app
+   docker compose logs -f app
    ```
 
 7. **Run database migrations** (first time only)
    ```bash
    # Access the database container
-   docker-compose exec db psql -U postgres
+   docker compose exec db psql -U postgres
    
    # Or run migrations from app container
-   docker-compose exec app sh
+   docker compose exec app sh
    # Then manually apply migrations or use Supabase CLI
    ```
 
@@ -145,22 +145,22 @@ sudo certbot --nginx -d yourdomain.com
 
 ```bash
 # Stop all services
-docker-compose down
+docker compose down
 
 # Rebuild and restart
-docker-compose up -d --build
+docker compose up -d --build
 
 # View logs
-docker-compose logs -f app
+docker compose logs -f app
 
 # Execute command in container
-docker-compose exec app sh
+docker compose exec app sh
 
 # Update currency manually
-docker-compose exec app node scripts/update-currency.mjs
+docker compose exec app node scripts/update-currency.mjs
 
 # Remove all data (dangerous!)
-docker-compose down -v
+docker compose down -v
 ```
 
 ## Currency Updates
@@ -175,7 +175,7 @@ Currency exchange rates (USD/TRY) are automatically updated:
 ### Container keeps restarting
 ```bash
 # Check logs
-docker-compose logs app
+docker compose logs app
 
 # Common issues:
 # - Missing environment variables
@@ -186,13 +186,13 @@ docker-compose logs app
 ### Database connection failed
 ```bash
 # Ensure database is healthy
-docker-compose ps
+docker compose ps
 
 # Restart database
-docker-compose restart db
+docker compose restart db
 
 # Check database logs
-docker-compose logs db
+docker compose logs db
 ```
 
 ### Cannot access application
