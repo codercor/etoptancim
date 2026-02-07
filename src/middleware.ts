@@ -1,7 +1,27 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { checkSetupRequired } from '@/lib/setup-actions'
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl
+
+    // Whitelist setup-related routes
+    const isSetupRoute = pathname.startsWith('/setup') || pathname.startsWith('/api/setup')
+
+    // Check if initial setup is required
+    const setupRequired = await checkSetupRequired()
+
+    if (setupRequired && !isSetupRoute) {
+        // Redirect all routes to setup page if setup is incomplete
+        return NextResponse.redirect(new URL('/setup', request.url))
+    }
+
+    if (!setupRequired && pathname === '/setup') {
+        // Setup already complete, redirect to admin dashboard
+        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    }
+
+    // Continue with normal session update
     return await updateSession(request)
 }
 

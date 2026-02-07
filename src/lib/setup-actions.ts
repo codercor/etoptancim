@@ -1,0 +1,155 @@
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import type { SetupResponse } from '@/types/setup'
+
+/**
+ * Check if initial setup is required (no admin exists)
+ */
+export async function checkSetupRequired(): Promise<boolean> {
+    try {
+        // Use service role to read profiles (bypasses RLS and ensures fresh data)
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        )
+
+        // Check if any admin exists in profiles table
+        const { data, error } = await supabaseAdmin
+            .from('profiles')
+            .select('id')
+            .eq('role', 'admin')
+            .limit(1)
+
+        if (error) {
+            console.error('Error checking setup status:', error)
+            return false // Assume setup not required on error to prevent lockout
+        }
+
+        // Setup required if no admin found
+        const setupRequired = !data || data.length === 0
+        console.log('[Setup Check] Admin count:', data?.length || 0, '- Setup required:', setupRequired)
+        return setupRequired
+    } catch (error) {
+        console.error('Failed to check setup status:', error)
+        return false
+    }
+}
+
+/**
+ * Check if setup is complete (admin exists)
+ */
+export async function isSetupComplete(): Promise<boolean> {
+    const setupRequired = await checkSetupRequired()
+    return !setupRequired
+}
+
+/**
+ * Initialize the first admin user
+ */
+export async function initializeAdmin(
+    email: string,
+    password: string,
+    companyName?: string
+): Promise<SetupResponse> {
+    try {
+        // Use service role client to bypass RLS for initial admin creation
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        )
+
+        // Double-check no admin exists (prevent race conditions)
+        const setupRequired = await checkSetupRequired()
+        if (!setupRequired) {
+            return {
+                success: false,
+                error: 'Admin user already exists. Setup has already been completed.'
+            }
+        }
+
+        // Validate inputs
+        if (!email || !password) {
+            return {
+                success: false,
+                error: 'Email and password are required'
+            }
+        }
+
+        if (password.length < 8) {
+            return {
+                success: false,
+                error: 'Password must be at least 8 characters'
+            }
+        }
+
+        // Create user via Supabase Auth using admin client
+        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true, // Auto-confirm email for first admin
+            user_metadata: {
+                company_name: companyName || '',
+            }
+        })
+
+        if (authError) {
+            console.error('Auth signup error:', authError)
+            return {
+                success: false,
+                error: authError.message || 'Failed to create admin user'
+            }
+        }
+
+        if (!authData.user) {
+            return {
+                success: false,
+                error: 'Failed to create user account'
+            }
+        }
+
+        // Create profile with admin role using service role (bypasses RLS)
+        const { error: profileError } = await supabaseAdmin
+            .from('profiles')
+            .insert({
+                id: authData.user.id,
+                role: 'admin',
+                contact_name: email.split('@')[0], // Use email prefix as initial name
+                company_name: companyName || null,
+            })
+
+        if (profileError) {
+            console.error('Profile creation error:', profileError)
+            // User was created but profile failed - this is a partial failure
+            return {
+                success: false,
+                error: 'User created but profile setup failed. Please contact support.'
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Admin account created successfully!'
+        }
+    } catch (error) {
+        console.error('Setup initialization error:', error)
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'An unexpected error occurred'
+        }
+    }
+}
