@@ -23,7 +23,7 @@ services:
       retries: 5
 
   # -----------------------------
-  # Kong (API Gateway)
+  # Kong
   # -----------------------------
   kong:
     container_name: katalog-kong
@@ -47,7 +47,7 @@ services:
       - ./supabase/docker/kong.yml:/var/lib/kong/kong.yml:ro
 
   # -----------------------------
-  # Supabase Auth (GoTrue)
+  # Auth
   # -----------------------------
   auth:
     container_name: katalog-auth
@@ -75,7 +75,7 @@ services:
       GOTRUE_MAILER_AUTOCONFIRM: "true"
 
   # -----------------------------
-  # Supabase REST (PostgREST)
+  # REST
   # -----------------------------
   rest:
     container_name: katalog-rest
@@ -91,7 +91,7 @@ services:
       PGRST_JWT_SECRET: ${JWT_SECRET}
 
   # -----------------------------
-  # Supabase Storage
+  # Storage (FIXED)
   # -----------------------------
   storage:
     container_name: katalog-storage
@@ -101,9 +101,18 @@ services:
       db:
         condition: service_healthy
     environment:
+      # REQUIRED KEYS
       ANON_KEY: ${ANON_KEY}
+      SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+
+      # FILE BACKEND
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      FILE_SIZE_LIMIT: 52428800
+
+      # S3 VALIDATION (zorunlu ama dummy)
       GLOBAL_S3_BUCKET: storage
       REGION: us-east-1
       S3_PROTOCOL: http
@@ -111,11 +120,10 @@ services:
       S3_PORT: 9000
       S3_ACCESS_KEY_ID: dummy
       S3_SECRET_ACCESS_KEY: dummy
+
       POSTGREST_URL: http://rest:3000
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
 
-      PGRST_JWT_SECRET: ${JWT_SECRET}
-      FILE_SIZE_LIMIT: 52428800
     volumes:
       - storage_data:/var/lib/storage
 
