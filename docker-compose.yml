@@ -101,6 +101,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      ANON_KEY: ${ANON_KEY}
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
 
