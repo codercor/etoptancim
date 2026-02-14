@@ -110,17 +110,18 @@ export async function initializeAdmin(
         })
 
         if (authError) {
-            console.error('Auth signup error:', authError)
+            console.error('Auth signup error full object:', JSON.stringify(authError, null, 2))
             return {
                 success: false,
-                error: authError.message || 'Failed to create admin user'
+                error: authError.message || `Auth error: ${JSON.stringify(authError)}`
             }
         }
 
         if (!authData.user) {
+            console.error('Auth data missing user:', JSON.stringify(authData, null, 2))
             return {
                 success: false,
-                error: 'Failed to create user account'
+                error: 'Failed to create user account (no user returned)'
             }
         }
 
@@ -136,11 +137,11 @@ export async function initializeAdmin(
             })
 
         if (profileError) {
-            console.error('Profile creation error:', profileError)
+            console.error('Profile creation error full object:', JSON.stringify(profileError, null, 2))
             // User was created but profile failed - this is a partial failure
             return {
                 success: false,
-                error: `User created but profile setup failed: ${profileError.message}`
+                error: `User created but profile setup failed: ${profileError.message || JSON.stringify(profileError)}`
             }
         }
 
