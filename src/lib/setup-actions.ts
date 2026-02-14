@@ -75,25 +75,6 @@ export async function initializeAdmin(
             }
         )
 
-        // Debug logging for VPS troubleshooting
-        const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-        const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-        console.log('[Setup Initialize] Supabase config check:', {
-            url: url,
-            keyLength: key?.length || 0,
-            keyPrefix: key ? key.substring(0, 7) : 'missing',
-            isServiceKey: key?.includes('service_role') // JWTs often contain this claims hint if decoded, but here we just check if it's the right string if it was a plain token (unlikely). 
-            // Actually service role keys are longer.
-        })
-
-        if (!key || key.length < 20) {
-            console.error('[Setup Initialize] CRITICAL: Service role key appears invalid or missing')
-            return {
-                success: false,
-                error: 'Configuration error: Service key is missing or invalid on server.'
-            }
-        }
-
         // Double-check no admin exists (prevent race conditions)
         const setupRequired = await checkSetupRequired()
         if (!setupRequired) {
