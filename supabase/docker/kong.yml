@@ -14,4 +14,18 @@ services:
         paths:
           - /rest/v1
         strip_path: true
+  - name: storage
+    url: http://storage:5000
+    routes:
+      - name: storage-route
+        paths:
+          - /storage/v1
+        strip_path: true
+  - name: realtime
+    url: http://realtime:4000
+    routes:
+      - name: realtime-route
+        paths:
+          - /realtime/v1
+        strip_path: true
 

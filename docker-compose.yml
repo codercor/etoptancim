@@ -95,6 +95,33 @@ services:
   # Storage (FIXED)
   # -----------------------------
   # -----------------------------
+  # Realtime
+  # -----------------------------
+  realtime:
+    container_name: katalog-realtime
+    image: supabase/realtime:v2.25.22
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB:-postgres}
+      DB_SSL: "false"
+      SLOT_NAME: supabase_realtime_rls
+      API_JWT_SECRET: ${JWT_SECRET}
+      FLY_ALLOC_ID: fly_alloc_id
+      ERLANG_NODE_NAME: nonode@nohost
+      REPLICATION_MODE: RLS
+      REPLICATION_POLL_INTERVAL: 100
+      SECURE_CHANNELS: "true"
+      JWT_SECRET: ${JWT_SECRET}
+
+  # -----------------------------
   # Storage (FIXED)
   # -----------------------------
   storage:
