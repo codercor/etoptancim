@@ -109,19 +109,40 @@ export async function initializeAdmin(
             }
         })
 
+        let userId = authData.user?.id
+
         if (authError) {
             console.error('Auth signup error full object:', JSON.stringify(authError, null, 2))
-            return {
-                success: false,
-                error: authError.message || `Auth error: ${JSON.stringify(authError)}`
+
+            // If user already exists, we might be in a state where Auth user exists but Profile is missing
+            // Try to recover by fetching the user and creating the profile
+            if (authError.message?.includes('already registered') || JSON.stringify(authError).includes('already registered')) {
+                console.log('User already exists, attempting to recover by fetching user details...')
+                const { data: listUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+                const existingUser = listUsers?.users.find(u => u.email === email)
+
+                if (existingUser) {
+                    userId = existingUser.id
+                    console.log('Found existing user ID:', userId)
+                } else {
+                    return {
+                        success: false,
+                        error: `User exists but could not be found: ${listError?.message}`
+                    }
+                }
+            } else {
+                return {
+                    success: false,
+                    error: authError.message || `Auth error: ${JSON.stringify(authError)}`
+                }
             }
         }
 
-        if (!authData.user) {
-            console.error('Auth data missing user:', JSON.stringify(authData, null, 2))
+        if (!userId) {
+            console.error('Auth data missing user ID')
             return {
                 success: false,
-                error: 'Failed to create user account (no user returned)'
+                error: 'Failed to obtain user ID for profile creation'
             }
         }
 
@@ -129,7 +150,7 @@ export async function initializeAdmin(
         const { error: profileError } = await supabaseAdmin
             .from('profiles')
             .upsert({
-                id: authData.user.id,
+                id: userId,
                 role: 'admin',
                 contact_name: email.split('@')[0], // Use email prefix as initial name
                 company_name: companyName || null,
