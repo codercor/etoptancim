@@ -17,3 +17,32 @@ services:
     url: http://auth:9999
   - name: rest
     url: http://rest:3000
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - FORCE_CORS_ORIGIN_REFLECTION
+        - ACCEPT
+        - ACCEPT-VERSION
+        - CONTENT-LENGTH
+        - CONTENT-MD5
+        - CONTENT-TYPE
+        - DATE
+        - X-AUTH-TOKEN
+        - X-REQUESTED-WITH
+        - APIKEY
+        - AUTHORIZATION
+      exposed_headers:
+        - "*"
+      credentials: true
+      max_age: 3600
