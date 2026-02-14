@@ -19,10 +19,18 @@ if [ -d "supabase/migrations" ]; then
   # Loop through migration files sorted by name
   for file in $(ls supabase/migrations/*.sql | sort); do
     echo "Applying $file..."
-    PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -f "$file"
+    PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 -f "$file" || {
+        echo "❌ Failed to apply $file"
+        exit 1
+    }
   done
   
   echo "✅ Migrations completed!"
+  
+  # Verify tables
+  echo "📊 Verifying tables in public schema:"
+  PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "\dt public.*"
+else
 else
   echo "⚠️  No migrations directory found at supabase/migrations"
 fi
