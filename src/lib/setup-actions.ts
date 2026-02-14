@@ -127,11 +127,13 @@ export async function initializeAdmin(
         // Create profile with admin role using service role (bypasses RLS)
         const { error: profileError } = await supabaseAdmin
             .from('profiles')
-            .insert({
+            .from('profiles')
+            .upsert({
                 id: authData.user.id,
                 role: 'admin',
                 contact_name: email.split('@')[0], // Use email prefix as initial name
                 company_name: companyName || null,
+                updated_at: new Date().toISOString(),
             })
 
         if (profileError) {
@@ -139,7 +141,7 @@ export async function initializeAdmin(
             // User was created but profile failed - this is a partial failure
             return {
                 success: false,
-                error: 'User created but profile setup failed. Please contact support.'
+                error: `User created but profile setup failed: ${profileError.message}`
             }
         }
 
