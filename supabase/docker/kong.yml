@@ -42,6 +42,8 @@ plugins:
         - X-REQUESTED-WITH
         - APIKEY
         - AUTHORIZATION
+        - X-CLIENT-INFO
+        - X-SUPABASE-API-VERSION
       exposed_headers:
         - "*"
       credentials: true
