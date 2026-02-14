@@ -95,7 +95,7 @@ services:
   # -----------------------------
   storage:
     container_name: katalog-storage
-    image: supabase/storage-api:v0.40.4
+    image: supabase/storage-api:v0.28.2
     restart: unless-stopped
     depends_on:
       db:
@@ -103,26 +103,16 @@ services:
     environment:
       ANON_KEY: ${ANON_KEY}
       SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
-      SERVICE_KEY: ${SERVICE_ROLE_KEY}
       JWT_SECRET: ${JWT_SECRET}
-      PGRST_JWT_SECRET: ${JWT_SECRET}
+
+      POSTGREST_URL: http://rest:3000
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
 
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       FILE_SIZE_LIMIT: 52428800
-
-      GLOBAL_S3_BUCKET: storage
-      REGION: us-east-1
-      S3_PROTOCOL: http
-      S3_HOST: localhost
-      S3_PORT: 9000
-      S3_ACCESS_KEY_ID: dummy
-      S3_SECRET_ACCESS_KEY: dummy
-
-      POSTGREST_URL: http://rest:3000
-      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
-    volumes:
-      - storage_data:/var/lib/storage
+  volumes:
+    - storage_data:/var/lib/storage
 
   # -----------------------------
   # Next.js App
