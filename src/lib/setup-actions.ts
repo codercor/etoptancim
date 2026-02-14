@@ -127,7 +127,6 @@ export async function initializeAdmin(
         // Create profile with admin role using service role (bypasses RLS)
         const { error: profileError } = await supabaseAdmin
             .from('profiles')
-            .from('profiles')
             .upsert({
                 id: authData.user.id,
                 role: 'admin',
