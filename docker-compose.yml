@@ -93,6 +93,9 @@ services:
   # -----------------------------
   # Storage (FIXED)
   # -----------------------------
+  # -----------------------------
+  # Storage (FIXED)
+  # -----------------------------
   storage:
     container_name: katalog-storage
     image: supabase/storage-api:v0.28.2
@@ -101,19 +104,24 @@ services:
       db:
         condition: service_healthy
     environment:
+      # --- AUTH & KEYS ---
       ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY} # <--- HATA BURADAYDI! (SERVICE_ROLE_KEY'i SERVICE_KEY olarak bekliyor)
       SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
       JWT_SECRET: ${JWT_SECRET}
-      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET} # <--- EKLENMESİ GEREKEN SATIR BURASI
+      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET}
 
+      # --- URLS & DB ---
       POSTGREST_URL: http://rest:3000
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
 
+      # --- STORAGE CONFIG ---
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       FILE_SIZE_LIMIT: 52428800
+      TENANT_ID: "default" # Bazen multitenant kontrolünde patlamaması için gerekir
 
-      # Dummy zorunlu alanlar
+      # --- DUMMY AWS/S3 CONFIG (Zorunlu tuttuğu için) ---
       GLOBAL_S3_BUCKET: dummy
       REGION: dummy
     volumes:
