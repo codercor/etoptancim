@@ -13,11 +13,18 @@ done
 echo "✅ PostgreSQL is up!"
 
 # Run migrations if they exist
-if [ -d "/app/supabase/migrations" ]; then
+if [ -d "supabase/migrations" ]; then
   echo "🔄 Running database migrations..."
-  # Note: You'll need to implement migration runner
-  # For now, migrations should be run manually or via Supabase CLI
-  echo "⚠️  Migrations should be applied before first run"
+  
+  # Loop through migration files sorted by name
+  for file in $(ls supabase/migrations/*.sql | sort); do
+    echo "Applying $file..."
+    PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f "$file"
+  done
+  
+  echo "✅ Migrations completed!"
+else
+  echo "⚠️  No migrations directory found at supabase/migrations"
 fi
 
 echo "✅ Starting Next.js application..."
