@@ -19,7 +19,7 @@ if [ -d "supabase/migrations" ]; then
   # Loop through migration files sorted by name
   for file in $(ls supabase/migrations/*.sql | sort); do
     echo "Applying $file..."
-    PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f "$file"
+    PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -f "$file"
   done
   
   echo "✅ Migrations completed!"
