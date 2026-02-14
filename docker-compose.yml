@@ -111,6 +111,10 @@ services:
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       FILE_SIZE_LIMIT: 52428800
+
+      # Dummy zorunlu alanlar
+      GLOBAL_S3_BUCKET: dummy
+      REGION: dummy
     volumes:
       - storage_data:/var/lib/storage
 
