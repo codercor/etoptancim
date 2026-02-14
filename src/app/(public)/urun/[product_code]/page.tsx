@@ -18,7 +18,7 @@ export default async function ProductDetailPage({
     params: Promise<{ product_code: string }>
 }) {
     const { product_code } = await params
-    const decodedCode = decodeURIComponent(product_code).toUpperCase()
+    const decodedCode = decodeURIComponent(product_code)
 
     const supabase = await createClient()
 
