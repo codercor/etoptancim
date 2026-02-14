@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getCurrentRate } from '@/lib/currency/exchange-rate'
+import { getCurrentRate, updateExchangeRate } from '@/lib/currency/exchange-rate'
 
 /**
  * GET /api/currency/current
@@ -7,7 +7,18 @@ import { getCurrentRate } from '@/lib/currency/exchange-rate'
  */
 export async function GET() {
     try {
-        const rateData = await getCurrentRate()
+        let rateData = await getCurrentRate()
+
+        if (!rateData) {
+            // Attempt to fetch fresh rate if none exists
+            console.log('No active rate found, attempting to fetch fresh rate...')
+            const updateResult = await updateExchangeRate()
+
+            if (updateResult.success) {
+                // Fetch the newly saved rate
+                rateData = await getCurrentRate()
+            }
+        }
 
         if (!rateData) {
             return NextResponse.json(

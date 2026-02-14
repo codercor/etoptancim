@@ -30,7 +30,9 @@ export async function checkSetupRequired(): Promise<boolean> {
 
         if (error) {
             console.error('Error checking setup status:', error)
-            return false // Assume setup not required on error to prevent lockout
+            return true // Assume setup required on error to ensure we don't lock out users. 
+            // If the DB is down or table missing, we should probably try to show setup or valid error.
+            // Returning false bypasses setup and sends them to login/dashboard which will likely fail too.
         }
 
         // Setup required if no admin found

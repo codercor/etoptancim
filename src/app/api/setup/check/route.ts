@@ -15,7 +15,7 @@ export async function GET() {
     } catch (error) {
         console.error('Error in setup check endpoint:', error)
         return NextResponse.json(
-            { setupRequired: false }, // Fail safe - don't lock out users
+            { setupRequired: true }, // Fail safe - show setup if check fails
             { status: 500 }
         )
     }
