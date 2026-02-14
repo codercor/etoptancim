@@ -1,6 +1,6 @@
 -- Create storage bucket for catalog images
-INSERT INTO storage.buckets (id, name, public) 
-VALUES ('catalog-images', 'catalog-images', true)
+INSERT INTO storage.buckets (id, name) 
+VALUES ('catalog-images', 'catalog-images')
 ON CONFLICT (id) DO NOTHING;
 
 -- Policy: Allow public read access to all images
