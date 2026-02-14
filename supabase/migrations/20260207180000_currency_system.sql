@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.exchange_rates (
 );
 
 -- Create index for quick lookups of active rates
-CREATE INDEX idx_exchange_rates_active 
+CREATE INDEX IF NOT EXISTS idx_exchange_rates_active 
 ON public.exchange_rates(base_currency, target_currency, fetched_at DESC) 
 WHERE is_active = true;
 
@@ -21,15 +21,18 @@ WHERE is_active = true;
 ALTER TABLE public.exchange_rates ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Anyone can read exchange rates (public data)
+DROP POLICY IF EXISTS "Anyone can read exchange rates" ON public.exchange_rates;
 CREATE POLICY "Anyone can read exchange rates" ON public.exchange_rates
   FOR SELECT USING (true);
 
 -- Policy: Only admins can insert/update exchange rates
+DROP POLICY IF EXISTS "Admins can insert exchange rates" ON public.exchange_rates;
 CREATE POLICY "Admins can insert exchange rates" ON public.exchange_rates
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
+DROP POLICY IF EXISTS "Admins can update exchange rates" ON public.exchange_rates;
 CREATE POLICY "Admins can update exchange rates" ON public.exchange_rates
   FOR UPDATE USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
@@ -37,7 +40,12 @@ CREATE POLICY "Admins can update exchange rates" ON public.exchange_rates
 
 -- Insert initial seed rate (approximate current USD/TRY rate)
 -- This ensures the system works immediately after migration
-INSERT INTO public.exchange_rates (base_currency, target_currency, rate, is_active)
-VALUES ('USD', 'TRY', 34.50, true);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM public.exchange_rates WHERE base_currency = 'USD' AND target_currency = 'TRY') THEN
+    INSERT INTO public.exchange_rates (base_currency, target_currency, rate, is_active)
+    VALUES ('USD', 'TRY', 34.50, true);
+  END IF;
+END $$;
 
 COMMENT ON TABLE public.exchange_rates IS 'Stores daily USD/TRY exchange rates fetched from Currency API';

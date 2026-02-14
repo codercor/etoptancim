@@ -44,49 +44,60 @@ ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 -- Profiles: 
 -- Admins can view all profiles. 
 -- Users can view their own profile.
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
 CREATE POLICY "Admins can view all profiles" ON public.profiles
   FOR SELECT USING (auth.uid() IN (SELECT id FROM public.profiles WHERE role = 'admin'));
 
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 
 -- Profiles Update:
 -- Admins can update any profile.
 -- Users can update their own profile.
+DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
 CREATE POLICY "Admins can update all profiles" ON public.profiles
   FOR UPDATE USING (auth.uid() IN (SELECT id FROM public.profiles WHERE role = 'admin'));
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
 -- initial admin insert policy (safe for setup)
+DROP POLICY IF EXISTS "Admins can insert profiles" ON public.profiles;
 CREATE POLICY "Admins can insert profiles" ON public.profiles
   FOR INSERT WITH CHECK (true); -- simplify for now, allowing inserts via service role mainly
 
 -- Orders:
 -- Admins can view all orders.
 -- Users can view their own orders.
+DROP POLICY IF EXISTS "Admins can view all orders" ON public.orders;
 CREATE POLICY "Admins can view all orders" ON public.orders
   FOR SELECT USING (auth.uid() IN (SELECT id FROM public.profiles WHERE role = 'admin'));
 
+DROP POLICY IF EXISTS "Users can view own orders" ON public.orders;
 CREATE POLICY "Users can view own orders" ON public.orders
   FOR SELECT USING (auth.uid() = user_id);
 
 -- Orders Insert/Update:
 -- Users can insert their own orders.
 -- Admins can update orders (e.g. status).
+DROP POLICY IF EXISTS "Users can insert own orders" ON public.orders;
 CREATE POLICY "Users can insert own orders" ON public.orders
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admins can update orders" ON public.orders;
 CREATE POLICY "Admins can update orders" ON public.orders
   FOR UPDATE USING (auth.uid() IN (SELECT id FROM public.profiles WHERE role = 'admin'));
 
 -- Order Items:
 -- Admins can view all order items.
 -- Users can view order items for their own orders.
+DROP POLICY IF EXISTS "Admins can view all order items" ON public.order_items;
 CREATE POLICY "Admins can view all order items" ON public.order_items
   FOR SELECT USING (auth.uid() IN (SELECT id FROM public.profiles WHERE role = 'admin'));
 
+DROP POLICY IF EXISTS "Users can view own order items" ON public.order_items;
 CREATE POLICY "Users can view own order items" ON public.order_items
   FOR SELECT USING (
     EXISTS (
@@ -96,6 +107,7 @@ CREATE POLICY "Users can view own order items" ON public.order_items
     )
   );
 
+DROP POLICY IF EXISTS "Users can insert own order items" ON public.order_items;
 CREATE POLICY "Users can insert own order items" ON public.order_items
   FOR INSERT WITH CHECK (
     EXISTS (

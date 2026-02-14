@@ -17,23 +17,28 @@ DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
 DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
 
 -- Create new non-recursive policies using the secure function
+DROP POLICY IF EXISTS "Admins can view all profiles_v2" ON public.profiles;
 CREATE POLICY "Admins can view all profiles_v2" ON public.profiles
   FOR SELECT USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can update all profiles_v2" ON public.profiles;
 CREATE POLICY "Admins can update all profiles_v2" ON public.profiles
   FOR UPDATE USING (public.is_admin());
 
 -- Also update other admin policies to use the helper function for consistency/performance
 -- Orders
 DROP POLICY IF EXISTS "Admins can view all orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can view all orders_v2" ON public.orders;
 CREATE POLICY "Admins can view all orders_v2" ON public.orders
   FOR SELECT USING (public.is_admin());
 
 DROP POLICY IF EXISTS "Admins can update orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can update orders_v2" ON public.orders;
 CREATE POLICY "Admins can update orders_v2" ON public.orders
   FOR UPDATE USING (public.is_admin());
 
 -- Order Items
 DROP POLICY IF EXISTS "Admins can view all order items" ON public.order_items;
+DROP POLICY IF EXISTS "Admins can view all order items_v2" ON public.order_items;
 CREATE POLICY "Admins can view all order items_v2" ON public.order_items
   FOR SELECT USING (public.is_admin());
