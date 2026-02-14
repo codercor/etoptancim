@@ -31,7 +31,6 @@ if [ -d "supabase/migrations" ]; then
   echo "📊 Verifying tables in public schema:"
   PGPASSWORD=$POSTGRES_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "\dt public.*"
 else
-else
   echo "⚠️  No migrations directory found at supabase/migrations"
 fi
 
