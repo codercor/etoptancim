@@ -111,8 +111,8 @@ services:
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       FILE_SIZE_LIMIT: 52428800
-  volumes:
-    - storage_data:/var/lib/storage
+    volumes:
+      - storage_data:/var/lib/storage
 
   # -----------------------------
   # Next.js App
